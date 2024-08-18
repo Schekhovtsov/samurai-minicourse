@@ -1,15 +1,25 @@
-import { getGooglePoints, getPlayerPoints } from '../../core/stateManager.js';
+import { GridComponent } from './Grid/Grid.component.js';
+import { ResultPanelComponent } from './ResultPanel/ResultPanel.component.js';
+import { SettingsComponent } from './Settings/Settings.component.js';
 
 export const AppComponent = () => {
     const element = document.createElement('div');
 
-    const googlePoints = getGooglePoints();
-    const player1Points = getPlayerPoints(1);
-    const player2Points = getPlayerPoints(2);
+    render(element);
+
+    return { element };
+};
+
+const render = async (element) => {
+    element.classList.add('container');
+
+    const settingsComponent = SettingsComponent();
+    const resultPanelComponent = ResultPanelComponent();
+    const gridComponent = GridComponent();
 
     element.append(
-        `Player 1: ${player1Points}, Player2: ${player2Points}, Google: ${googlePoints}`
+        settingsComponent.element,
+        resultPanelComponent.element,
+        gridComponent.element
     );
-
-    return element;
 };

@@ -5,15 +5,15 @@ const _state = {
     },
 };
 
-export const getGooglePoints = () => _state.points.google;
+export const getGooglePoints = async () => _state.points.google;
 
 /**
  * Возвращает очки игрока по его номеру.
  *
  * @param {number} playerNumber - Номер игрока (с отсчетом от 1).
- * @return {number} Очки игрока.
+ * @return {Promise<number>} Очки игрока.
  */
-export const getPlayerPoints = (playerNumber) => {
+export const getPlayerPoints = async (playerNumber) => {
     const playerIndex = playerNumber - 1;
 
     if (playerIndex < 0 || playerIndex > _state.points.players.length - 1) {
