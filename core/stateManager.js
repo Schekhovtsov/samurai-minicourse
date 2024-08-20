@@ -1,4 +1,10 @@
 const _state = {
+    settings: {
+        gridSize: {
+            rowsCount: 3,
+            columnsCount: 3,
+        },
+    },
     points: {
         google: 50,
         players: [100, 200], // Массив очков игроков
@@ -26,3 +32,6 @@ export const getPlayerPoints = async (playerNumber) => {
 
     return _state.points.players[playerIndex];
 };
+
+// Возвращаем новый объект чтобы исключить изменение снаружи
+export const getGridSize = async () => ({ ..._state.settings.gridSize });
