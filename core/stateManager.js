@@ -21,6 +21,71 @@ const _state = {
     },
 };
 
+let _observers = [];
+
+export const subscribe = (observer) => {
+    _observers.push(observer);
+};
+
+export const unsubscribe = (observer) => {
+    _observers = _observers.filter((o) => o !== observer);
+};
+
+const _notifyObservers = () => {
+    _observers.forEach((observer) => {
+        try {
+            observer();
+        } catch (error) {
+            console.error(error);
+        }
+    });
+};
+
+const _generateNewIntegerNumber = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+const _jumpGoogleToNewPosition = () => {
+    const newPosition = {
+        ..._state.points.google,
+    };
+
+    do {
+        newPosition.x = _generateNewIntegerNumber(
+            0,
+            _state.settings.gridSize.columnsCount - 1
+        );
+        newPosition.y = _generateNewIntegerNumber(
+            0,
+            _state.settings.gridSize.rowsCount - 1
+        );
+
+        var isNewPositionMatchWithCurrentGooglePosition =
+            newPosition.x === _state.positions.google.x &&
+            newPosition.y === _state.positions.google.y;
+        var isNewPositionMatchWithCurrentPlayer1Position =
+            newPosition.x === _state.positions.players[0].x &&
+            newPosition.y === _state.positions.players[0].y;
+        var isNewPositionMatchWithCurrentPlayer2Position =
+            newPosition.x === _state.positions.players[1].x &&
+            newPosition.y === _state.positions.players[1].y;
+    } while (
+        isNewPositionMatchWithCurrentGooglePosition ||
+        isNewPositionMatchWithCurrentPlayer1Position ||
+        isNewPositionMatchWithCurrentPlayer2Position
+    );
+
+    _state.positions.google = newPosition;
+    _state.points.google++;
+};
+
+setInterval(() => {
+    _jumpGoogleToNewPosition();
+    _notifyObservers();
+}, 1000);
+
 const getPlayerIndexByNumber = (playerNumber) => {
     const playerIndex = playerNumber - 1;
 

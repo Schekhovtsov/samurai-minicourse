@@ -1,9 +1,16 @@
 import { AppComponent } from './components/App.component.js';
+import { subscribe, unsubscribe } from '../core/stateManager.js';
 
 const rootElement = document.getElementById('root');
 
-rootElement.innerHTML = '';
+const renderApp = () => {
+    rootElement.innerHTML = '';
 
-const appComponent = AppComponent();
+    const appComponent = AppComponent();
 
-rootElement.append(appComponent.element);
+    rootElement.append(appComponent.element);
+};
+
+renderApp();
+
+subscribe(renderApp);
