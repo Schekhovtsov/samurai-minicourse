@@ -4,11 +4,11 @@ const _state = {
     gameStatus: GAME_STATUSES.SETTINGS,
     settings: {
         gridSize: {
-            rowsCount: 3,
+            rowsCount: 5,
             columnsCount: 5,
         },
         googleJumpInterval: 1000,
-        pointsToLose: 3,
+        pointsToLose: 5,
     },
     points: {
         google: 0,
@@ -88,6 +88,13 @@ const _jumpGoogleToNewPosition = () => {
 let googleJumpInterval;
 
 export const start = async () => {
+    if (_state.gameStatus !== GAME_STATUSES.SETTINGS) {
+        throw new Error(
+            'Некорректный переход между состояниями игры из ' +
+                _state.gameStatus
+        );
+    }
+
     _state.positions.players[0] = { x: 0, y: 0 };
     _state.positions.players[1] = {
         x: _state.settings.gridSize.columnsCount - 1,
@@ -112,8 +119,9 @@ export const start = async () => {
 
     _state.gameStatus = GAME_STATUSES.IN_PROGRESS;
 
-    // Димыч вроде бы перенёс _notifyObservers сюда,
-    // но у меня игра перестает работать
+    // Димыч зачем-то добавил] _notifyObservers и сюда,
+    // но у вроде бы работает и без этого
+    // _notifyObservers();
 };
 
 export const playAgain = () => {
