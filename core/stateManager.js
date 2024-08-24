@@ -1,13 +1,18 @@
+import { GAME_STATUSES } from './constants.js';
+
 const _state = {
+    gameStatus: GAME_STATUSES.SETTINGS,
     settings: {
         gridSize: {
             rowsCount: 3,
             columnsCount: 5,
         },
+        googleJumpInterval: 1000,
+        pointsToLose: 3,
     },
     points: {
-        google: 50,
-        players: [100, 50], // Массив очков игроков
+        google: 0,
+        players: [0, 0], // Массив очков игроков
     },
     positions: {
         google: {
@@ -16,7 +21,7 @@ const _state = {
         },
         players: [
             { x: 0, y: 0 },
-            { x: 2, y: 1 },
+            { x: 0, y: 0 },
         ],
     },
 };
@@ -78,13 +83,43 @@ const _jumpGoogleToNewPosition = () => {
     );
 
     _state.positions.google = newPosition;
-    _state.points.google++;
 };
 
-setInterval(() => {
+let googleJumpInterval;
+
+export const start = async () => {
+    _state.positions.players[0] = { x: 0, y: 0 };
+    _state.positions.players[1] = {
+        x: _state.settings.gridSize.columnsCount - 1,
+        y: _state.settings.gridSize.rowsCount - 1,
+    };
+    _state.points.google = 0;
+    _state.points.players = [0, 0];
+
     _jumpGoogleToNewPosition();
+
+    googleJumpInterval = setInterval(() => {
+        _jumpGoogleToNewPosition();
+        _state.points.google++;
+
+        if (_state.points.google >= _state.settings.pointsToLose) {
+            clearInterval(googleJumpInterval);
+            _state.gameStatus = GAME_STATUSES.LOSE;
+        }
+
+        _notifyObservers();
+    }, _state.settings.googleJumpInterval);
+
+    _state.gameStatus = GAME_STATUSES.IN_PROGRESS;
+
+    // Димыч вроде бы перенёс _notifyObservers сюда,
+    // но у меня игра перестает работать
+};
+
+export const playAgain = () => {
+    _state.gameStatus = GAME_STATUSES.SETTINGS;
     _notifyObservers();
-}, 1000);
+};
 
 const getPlayerIndexByNumber = (playerNumber) => {
     const playerIndex = playerNumber - 1;
@@ -122,5 +157,9 @@ export const getGooglePosition = async () => ({ ..._state.positions.google });
  */
 export const getPlayerPositions = async (playerNumber) => {
     const playerIndex = getPlayerIndexByNumber(playerNumber);
-    return _state.positions.players[playerIndex];
+    return { ..._state.positions.players[playerIndex] };
+};
+
+export const getGameStatus = async () => {
+    return _state.gameStatus;
 };
