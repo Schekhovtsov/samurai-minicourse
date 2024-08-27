@@ -10,6 +10,7 @@ export const AppComponent = () => {
     const props = {
         localState: {
             prevGameStatus: null,
+            cleanupFunctions: [],
         },
     };
 
@@ -36,6 +37,8 @@ const render = async (element, { localState }) => {
 
     localState.prevGameStatus = gameStatus;
 
+    localState.cleanupFunctions.forEach((cf) => cf());
+
     console.log('APP RENDERED');
 
     element.innerHTML = '';
@@ -53,6 +56,7 @@ const render = async (element, { localState }) => {
             const settingsComponent = SettingsComponent();
             const resultPanelComponent = ResultPanelComponent();
             const gridComponent = GridComponent();
+            localState.cleanupFunctions.push(gridComponent.cleanup);
 
             element.append(
                 settingsComponent.element,
