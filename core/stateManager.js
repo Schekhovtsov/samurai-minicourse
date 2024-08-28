@@ -1,11 +1,11 @@
-import { GAME_STATUSES } from './constants.js';
+import { EVENTS, GAME_STATUSES } from './constants.js';
 
 const _state = {
     gameStatus: GAME_STATUSES.SETTINGS,
     settings: {
         gridSize: {
-            rowsCount: 5,
-            columnsCount: 5,
+            rowsCount: 2,
+            columnsCount: 2,
         },
         googleJumpInterval: 1000,
         pointsToLose: 5,
@@ -36,10 +36,15 @@ export const unsubscribe = (observer) => {
     _observers = _observers.filter((o) => o !== observer);
 };
 
-const _notifyObservers = () => {
+const _notifyObservers = (name, payload = {}) => {
+    const samuraiEvent = {
+        name,
+        payload,
+    };
+
     _observers.forEach((observer) => {
         try {
-            observer();
+            observer(samuraiEvent);
         } catch (error) {
             console.error(error);
         }
@@ -106,27 +111,30 @@ export const start = async () => {
     _jumpGoogleToNewPosition();
 
     googleJumpInterval = setInterval(() => {
+        const prevPosition = { ..._state.positions.google };
         _jumpGoogleToNewPosition();
+        _notifyObservers(EVENTS.GOOGLE_JUMPED, {
+            prevPosition,
+            newPosition: { ..._state.positions.google },
+        });
+
         _state.points.google++;
+        _notifyObservers(EVENTS.SCORES_CHANGED);
 
         if (_state.points.google >= _state.settings.pointsToLose) {
             clearInterval(googleJumpInterval);
             _state.gameStatus = GAME_STATUSES.LOSE;
+            _notifyObservers(EVENTS.STATUS_CHANGED);
         }
-
-        _notifyObservers();
     }, _state.settings.googleJumpInterval);
 
     _state.gameStatus = GAME_STATUSES.IN_PROGRESS;
-
-    // Димыч зачем-то добавил] _notifyObservers и сюда,
-    // но у вроде бы работает и без этого
-    // _notifyObservers();
+    _notifyObservers(EVENTS.STATUS_CHANGED);
 };
 
 export const playAgain = () => {
     _state.gameStatus = GAME_STATUSES.SETTINGS;
-    _notifyObservers();
+    _notifyObservers(EVENTS.STATUS_CHANGED);
 };
 
 const getPlayerIndexByNumber = (playerNumber) => {

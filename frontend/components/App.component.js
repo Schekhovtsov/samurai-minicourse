@@ -15,7 +15,6 @@ export const AppComponent = () => {
     };
 
     const element = document.createElement('div');
-    console.log('APP CREATING');
 
     subscribe(() => {
         render(element, props);
@@ -38,8 +37,7 @@ const render = async (element, { localState }) => {
     localState.prevGameStatus = gameStatus;
 
     localState.cleanupFunctions.forEach((cf) => cf());
-
-    console.log('APP RENDERED');
+    localState.cleanupFunctions = [];
 
     element.innerHTML = '';
 
@@ -57,6 +55,7 @@ const render = async (element, { localState }) => {
             const resultPanelComponent = ResultPanelComponent();
             const gridComponent = GridComponent();
             localState.cleanupFunctions.push(gridComponent.cleanup);
+            localState.cleanupFunctions.push(resultPanelComponent.cleanup);
 
             element.append(
                 settingsComponent.element,
