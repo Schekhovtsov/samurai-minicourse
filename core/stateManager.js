@@ -1,4 +1,4 @@
-import { EVENTS, GAME_STATUSES } from './constants.js';
+import { EVENTS, GAME_STATUSES, MOVING_DIRECTIONS } from './constants.js';
 
 const _state = {
     gameStatus: GAME_STATUSES.SETTINGS,
@@ -71,26 +71,65 @@ const _jumpGoogleToNewPosition = () => {
             0,
             _state.settings.gridSize.rowsCount - 1
         );
-
-        var isNewPositionMatchWithCurrentGooglePosition =
-            newPosition.x === _state.positions.google.x &&
-            newPosition.y === _state.positions.google.y;
-        var isNewPositionMatchWithCurrentPlayer1Position =
-            newPosition.x === _state.positions.players[0].x &&
-            newPosition.y === _state.positions.players[0].y;
-        var isNewPositionMatchWithCurrentPlayer2Position =
-            newPosition.x === _state.positions.players[1].x &&
-            newPosition.y === _state.positions.players[1].y;
     } while (
-        isNewPositionMatchWithCurrentGooglePosition ||
-        isNewPositionMatchWithCurrentPlayer1Position ||
-        isNewPositionMatchWithCurrentPlayer2Position
+        _isPositionMatchWithPlayer1(newPosition) ||
+        _isPositionMatchWithPlayer2(newPosition) ||
+        _isPositionMatchWithGoogle(newPosition)
     );
 
     _state.positions.google = newPosition;
 };
 
+const _isPositionInValidRange = (position) => {
+    if (position.x < 0 || position.x >= _state.settings.gridSize.columnsCount) {
+        return false;
+    }
+
+    if (position.y < 0 || position.y >= _state.settings.gridSize.rowsCount) {
+        return false;
+    }
+
+    return true;
+};
+
+const _isPositionMatchWithPlayer1 = (newPosition) => {
+    return (
+        newPosition.x === _state.positions.players[0].x &&
+        newPosition.y === _state.positions.players[0].y
+    );
+};
+
+const _isPositionMatchWithPlayer2 = (newPosition) => {
+    return (
+        newPosition.x === _state.positions.players[1].x &&
+        newPosition.y === _state.positions.players[1].y
+    );
+};
+
+const _isPositionMatchWithGoogle = (newPosition) => {
+    return (
+        newPosition.x === _state.positions.google.x &&
+        newPosition.y === _state.positions.google.y
+    );
+};
+
+const _catchGoogle = (playerNumber) => {
+    const playerIndex = getPlayerIndexByNumber(playerNumber);
+
+    _state.points.players[playerIndex]++;
+    _notifyObservers(EVENTS.SCORES_CHANGED);
+
+    if (_state.points.players[playerIndex] === _state.settings.pointsToWin) {
+        _state.gameStatus = GAME_STATUSES.WIN;
+        _notifyObservers(EVENTS.SCORES_CHANGED);
+
+        clearInterval(googleJumpInterval);
+    }
+};
+
 let googleJumpInterval;
+
+// SETTERS
 
 export const start = async () => {
     if (_state.gameStatus !== GAME_STATUSES.SETTINGS) {
@@ -137,6 +176,66 @@ export const playAgain = () => {
     _notifyObservers(EVENTS.STATUS_CHANGED);
 };
 
+export const movePlayer = async (playerNumber, direction) => {
+    if (_state.gameStatus !== GAME_STATUSES.IN_PROGRESS) {
+        return;
+    }
+
+    const playerIndex = getPlayerIndexByNumber(playerNumber);
+
+    const prevPosition = { ..._state.positions.players[playerIndex] };
+    const newPosition = { ..._state.positions.players[playerIndex] };
+
+    switch (direction) {
+        case MOVING_DIRECTIONS.UP: {
+            newPosition.y--;
+            break;
+        }
+        case MOVING_DIRECTIONS.DOWN: {
+            newPosition.y++;
+            break;
+        }
+        case MOVING_DIRECTIONS.LEFT: {
+            newPosition.x--;
+            break;
+        }
+        case MOVING_DIRECTIONS.RIGHT: {
+            newPosition.x++;
+            break;
+        }
+    }
+
+    const isValidRange = _isPositionInValidRange(newPosition);
+
+    if (!isValidRange) {
+        return;
+    }
+
+    const isPlayer1PositionTheSame = _isPositionMatchWithPlayer1(newPosition);
+    if (isPlayer1PositionTheSame) {
+        return;
+    }
+
+    const isPlayer2PositionTheSame = _isPositionMatchWithPlayer2(newPosition);
+    if (isPlayer2PositionTheSame) {
+        return;
+    }
+
+    const isGooglePositionTheSame = _isPositionMatchWithGoogle(newPosition);
+
+    if (isGooglePositionTheSame) {
+        _catchGoogle(playerNumber);
+    }
+
+    _state.positions.players[playerIndex] = newPosition;
+    _notifyObservers(EVENTS[`PLAYER${playerNumber}_MOVED`], {
+        prevPosition,
+        newPositions: newPosition,
+    });
+};
+
+// GETTERS
+
 const getPlayerIndexByNumber = (playerNumber) => {
     const playerIndex = playerNumber - 1;
 
@@ -160,7 +259,6 @@ export const getPlayerPoints = async (playerNumber) => {
     return _state.points.players[playerIndex];
 };
 
-// Возвращаем новый объект чтобы исключить изменение снаружи
 export const getGridSize = async () => ({ ..._state.settings.gridSize });
 
 export const getGooglePosition = async () => ({ ..._state.positions.google });
