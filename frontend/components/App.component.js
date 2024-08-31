@@ -6,27 +6,30 @@ import { WinComponent } from './Win/Win.component.js';
 import { ResultPanelComponent } from './ResultPanel/ResultPanel.component.js';
 import { SettingsComponent } from './Settings/Settings.component.js';
 import { StartComponent } from './Start/Start.component.js';
+import { AudioComponent } from './Audio/Audio.component.js';
 
 export const AppComponent = () => {
-    const props = {
-        localState: {
-            prevGameStatus: null,
-            cleanupFunctions: [],
-        },
+    const localState = {
+        prevGameStatus: null,
+        cleanupFunctions: [],
     };
+
+    const props = {};
+
+    const audioComponent = AudioComponent();
 
     const element = document.createElement('div');
 
     subscribe(() => {
-        render(element, props);
+        render(element, props, localState);
     });
 
-    render(element, props);
+    render(element, props, localState);
 
     return { element };
 };
 
-const render = async (element, { localState }) => {
+const render = async (element, props, localState) => {
     element.classList.add('container');
 
     const gameStatus = await getGameStatus();

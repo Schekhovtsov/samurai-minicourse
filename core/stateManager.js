@@ -122,7 +122,9 @@ const _catchGoogle = (playerNumber) => {
 
     if (_state.points.players[playerIndex] === _state.settings.pointsToWin) {
         _state.gameStatus = GAME_STATUSES.WIN;
-        _notifyObservers(EVENTS.SCORES_CHANGED);
+        _notifyObservers(EVENTS.STATUS_CHANGED, {
+            gameStatus: _state.gameStatus,
+        });
 
         clearInterval(googleJumpInterval);
     } else {

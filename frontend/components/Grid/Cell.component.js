@@ -10,6 +10,11 @@ import { PlayerComponent } from '../common/Player.component.js';
 
 export const CellComponent = (props) => {
     const { x, y } = props;
+
+    const localState = {
+        renderVersion: 0,
+    };
+
     const element = document.createElement('td');
 
     const observer = (e) => {
@@ -24,17 +29,17 @@ export const CellComponent = (props) => {
         }
 
         if (e.payload.prevPosition.x === x && e.payload.prevPosition.y === y) {
-            render(element, props);
+            render(element, props, localState);
         }
 
         if (e.payload.newPosition.x === x && e.payload.newPosition.y === y) {
-            render(element, props);
+            render(element, props, localState);
         }
     };
 
     subscribe(observer);
 
-    render(element, props);
+    render(element, props, localState);
 
     return {
         element,
@@ -44,12 +49,19 @@ export const CellComponent = (props) => {
     };
 };
 
-const render = async (element, { x, y }) => {
+const render = async (element, { x, y }, localState) => {
+    localState.renderVersion++;
+    const currentRenderVersion = localState.renderVersion;
+
     element.innerHTML = '';
 
     const googlePosition = await getGooglePosition();
     const player1Position = await getPlayerPositions(1);
     const player2Position = await getPlayerPositions(2);
+
+    if (currentRenderVersion < localState.renderVersion) {
+        return;
+    }
 
     if (googlePosition.x === x && googlePosition.y === y) {
         element.append(GoogleComponent().element);
