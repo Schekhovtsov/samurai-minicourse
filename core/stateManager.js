@@ -7,7 +7,7 @@ const _state = {
             rowsCount: 4,
             columnsCount: 4,
         },
-        googleJumpInterval: 2000,
+        googleJumpInterval: 3000,
         pointsToLose: 10,
         pointsToWin: 3,
     },
