@@ -2,6 +2,7 @@ import { GAME_STATUSES } from '../../core/constants.js';
 import { getGameStatus, subscribe } from '../../core/stateManager.js';
 import { GridComponent } from './Grid/Grid.component.js';
 import { LoseComponent } from './Lose/Lose.component.js';
+import { WinComponent } from './Win/Win.component.js';
 import { ResultPanelComponent } from './ResultPanel/ResultPanel.component.js';
 import { SettingsComponent } from './Settings/Settings.component.js';
 import { StartComponent } from './Start/Start.component.js';
@@ -69,6 +70,13 @@ const render = async (element, { localState }) => {
             const loseComponent = LoseComponent();
 
             element.append(loseComponent.element);
+
+            break;
+        }
+        case GAME_STATUSES.WIN: {
+            const winComponent = WinComponent();
+
+            element.append(winComponent.element);
 
             break;
         }

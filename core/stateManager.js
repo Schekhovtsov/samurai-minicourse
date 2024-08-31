@@ -4,15 +4,16 @@ const _state = {
     gameStatus: GAME_STATUSES.SETTINGS,
     settings: {
         gridSize: {
-            rowsCount: 2,
-            columnsCount: 2,
+            rowsCount: 4,
+            columnsCount: 4,
         },
-        googleJumpInterval: 1000,
-        pointsToLose: 5,
+        googleJumpInterval: 2000,
+        pointsToLose: 10,
+        pointsToWin: 3,
     },
     points: {
         google: 0,
-        players: [0, 0], // Массив очков игроков
+        players: [0, 0],
     },
     positions: {
         google: {
@@ -124,6 +125,14 @@ const _catchGoogle = (playerNumber) => {
         _notifyObservers(EVENTS.SCORES_CHANGED);
 
         clearInterval(googleJumpInterval);
+    } else {
+        const prevPosition = _state.positions.google;
+
+        _jumpGoogleToNewPosition();
+        _notifyObservers(EVENTS.GOOGLE_JUMPED, {
+            prevPosition,
+            newPosition: _state.positions.google,
+        });
     }
 };
 
@@ -230,7 +239,7 @@ export const movePlayer = async (playerNumber, direction) => {
     _state.positions.players[playerIndex] = newPosition;
     _notifyObservers(EVENTS[`PLAYER${playerNumber}_MOVED`], {
         prevPosition,
-        newPositions: newPosition,
+        newPosition: newPosition,
     });
 };
 

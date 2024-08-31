@@ -13,7 +13,13 @@ export const CellComponent = (props) => {
     const element = document.createElement('td');
 
     const observer = (e) => {
-        if (e.name !== EVENTS.GOOGLE_JUMPED) {
+        if (
+            [
+                EVENTS.GOOGLE_JUMPED,
+                EVENTS.PLAYER1_MOVED,
+                EVENTS.PLAYER2_MOVED,
+            ].every((name) => name !== e.name)
+        ) {
             return;
         }
 
