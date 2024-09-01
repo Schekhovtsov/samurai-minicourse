@@ -1,4 +1,4 @@
-import { playAgain } from '../../../core/stateManager.js';
+import { playAgain } from '../../../core/stateManager.proxy.js';
 
 export const LoseComponent = () => {
     const element = document.createElement('div');

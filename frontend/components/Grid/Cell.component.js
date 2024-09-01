@@ -1,10 +1,10 @@
 import { EVENTS } from '../../../core/constants.js';
 import {
     getGooglePosition,
-    getPlayerPositions,
+    getPlayerPosition,
     subscribe,
     unsubscribe,
-} from '../../../core/stateManager.js';
+} from '../../../core/stateManager.proxy.js';
 import { GoogleComponent } from '../common/Google.component.js';
 import { PlayerComponent } from '../common/Player.component.js';
 
@@ -56,8 +56,8 @@ const render = async (element, { x, y }, localState) => {
     element.innerHTML = '';
 
     const googlePosition = await getGooglePosition();
-    const player1Position = await getPlayerPositions(1);
-    const player2Position = await getPlayerPositions(2);
+    const player1Position = await getPlayerPosition(1);
+    const player2Position = await getPlayerPosition(2);
 
     if (currentRenderVersion < localState.renderVersion) {
         return;

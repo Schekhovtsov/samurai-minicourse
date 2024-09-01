@@ -1,4 +1,4 @@
-import { start } from '../../../core/stateManager.js';
+import { start } from '../../../core/stateManager.proxy.js';
 
 export const StartComponent = () => {
     const element = document.createElement('div');

@@ -1,4 +1,4 @@
-import { getGridSize, movePlayer } from '../../../core/stateManager.js';
+import { getGridSize, movePlayer } from '../../../core/stateManager.proxy.js';
 import { CellComponent } from './Cell.component.js';
 import { MOVING_DIRECTIONS } from '../../../core/constants.js';
 

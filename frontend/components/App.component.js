@@ -1,5 +1,5 @@
 import { GAME_STATUSES } from '../../core/constants.js';
-import { getGameStatus, subscribe } from '../../core/stateManager.js';
+import { getGameStatus, subscribe } from '../../core/stateManager.proxy.js';
 import { GridComponent } from './Grid/Grid.component.js';
 import { LoseComponent } from './Lose/Lose.component.js';
 import { WinComponent } from './Win/Win.component.js';

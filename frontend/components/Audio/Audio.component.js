@@ -1,4 +1,4 @@
-import { subscribe } from '../../../core/stateManager.js';
+import { subscribe } from '../../../core/stateManager.proxy.js';
 import { EVENTS, GAME_STATUSES } from './../../../core/constants.js';
 
 export const AudioComponent = () => {

@@ -280,7 +280,7 @@ export const getGooglePosition = async () => ({ ..._state.positions.google });
  * @param {number} playerNumber - Номер игрока (начиная с 1).
  * @return {object} Позиция игрока в виде объекта с координатами x и y.
  */
-export const getPlayerPositions = async (playerNumber) => {
+export const getPlayerPosition = async (playerNumber) => {
     const playerIndex = getPlayerIndexByNumber(playerNumber);
     return { ..._state.positions.players[playerIndex] };
 };

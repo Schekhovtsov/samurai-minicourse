@@ -4,7 +4,7 @@ import {
     getPlayerPoints,
     subscribe,
     unsubscribe,
-} from '../../../core/stateManager.js';
+} from '../../../core/stateManager.proxy.js';
 
 export const ResultPanelComponent = () => {
     const element = document.createElement('div');
